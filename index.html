@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nes-js</title>
+  <style>
+    .container {
+      width: 1000px;
+      height: 600px;
+      background-color: aqua;
+      margin: 0 auto;
+      position: relative;
+    }
+    .camera {
+      width: 800px;
+      height: 500px;
+      border: 1px solid red;
+      margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-image: url('./map.png');
+      background-repeat: no-repeat;
+      background-position: -1000px -3400px;
+      overflow: hidden;
+    }
+    .content{
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .character{
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      left: 400px;
+      top: 250px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+    }
+    .controls{
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      color: white;
+      font-weight: bold;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      display: flex;
+    }
+    .controls div{
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      cursor: pointer;
+    }
+    .up{
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      background-color: red;
+    }
+    .down{
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      background-color: blue;
+    }
+    .left{
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: black;
+    }
+    .right{
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="camera">
+      <div class="content">
+        <div class="character"></div>
+        <div class="controls">
+          <div onmouseup="stopMove(event)" ontouchend="stopMove(event)" onclick="actionMoveClick('up')" ontouchstart="actionMove('up')" onmousedown="actionMove('up')" class="up"></div>
+          <div onmouseup="stopMove(event)" ontouchend="stopMove(event)" onclick="actionMoveClick('down')" ontouchstart="actionMove('down')" onmousedown="actionMove('down')" class="down"></div>
+          <div onmouseup="stopMove(event)" ontouchend="stopMove(event)" onclick="actionMoveClick('left')" ontouchstart="actionMove('left')" onmousedown="actionMove('left')" class="left"></div>
+          <div onmouseup="stopMove(event)" ontouchend="stopMove(event)" onclick="actionMoveClick('right')" ontouchstart="actionMove('right')" onmousedown="actionMove('right')" class="right"></div>
+        </div>
+      </div>
+    </div>
+
+    <audio class="qiaqia" controls src="qiaqia.mp3" loop autoplay style="visibility: hidden;"></audio>
+  </div>
+
+  <script type="text/javascript">
+    let data = {
+      direction: 'down'
+    }
+    const directions = {
+      'w': 'up',
+      's': 'down',
+      'a': 'left',
+      'd': 'right'
+    }
+
+    let moveInterval = null;
+
+    let x = 0
+    let y = 0
+    let bg_x = -1000
+    let bg_y = -3400
+    let speed = 10
+    let characterDom = document.querySelector('.character')
+    let cameraDom  = document.querySelector('.camera')
+    window.addEventListener('keydown', (e)=>{
+      data.direction = directions[e.key]
+      move(data.direction)
+    })
+
+    function move(direction){
+      switch(direction){
+        case 'up':
+          y -= speed
+          bg_y += speed
+          break
+        case 'down':
+          y += speed
+          bg_y -= speed
+          break
+        case 'left':
+          x -= speed
+          bg_x += speed
+          break
+        case 'right':
+          x += speed
+          bg_x -= speed
+          break
+      }
+      // characterDom.style.transform =`translate(${x}px, ${y}px)`
+      cameraDom.style.backgroundPosition = `${bg_x}px ${bg_y}px`
+    }
+
+    function actionMove(direction){
+      moveInterval = setInterval(()=>{
+        move(direction)
+      }, 100)
+    }
+
+    function actionMoveClick(direction){
+      move(direction)
+    }
+
+    function stopMove(event){
+      pauseEvent(event) // 不阻止默认事件 mouseup事件无效
+      clearInterval(moveInterval)
+    }
+
+    function pauseEvent(e){
+      if(e.stopPropagation) e.stopPropagation();
+      if(e.preventDefault) e.preventDefault();
+      e.cancelBubble=true;
+      e.returnValue=false;
+      return false;
+    }
+  </script>
+</body>
+</html>
