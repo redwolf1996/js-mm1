@@ -34,12 +34,13 @@
     }
     .character{
       position: absolute;
-      width: 30px;
-      height: 30px;
+      width: 33px;
+      height: 33px;
       left: 400px;
       top: 250px;
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 50%;
+      background-image: url('./wolf.png');
+      background-repeat: no-repeat;
+      background-position: 0 0;
     }
     .controls{
       position: absolute;
@@ -104,13 +105,42 @@
 
   <script type="text/javascript">
     let data = {
-      direction: 'down'
+      direction: 'down',
+      before_direction: 'down',
+      personImgIndex: 0
     }
     const directions = {
-      'w': 'up',
-      's': 'down',
-      'a': 'left',
-      'd': 'right'
+      w: 'up',
+      s: 'down',
+      a: 'left',
+      d: 'right'
+    }
+
+    const personImgPosition = {
+      up: [
+        '0 -96px',
+        '-32px -96px',
+        '-64px -96px',
+        '-96px -96px',
+      ],
+      down: [
+        '0 0',
+        '-32px 0',
+        '-64px 0',
+        '-96px 0',
+      ],
+      left: [
+        '0 -32px',
+        '-32px -32px',
+        '-64px -32px',
+        '-96px -32px',
+      ],
+      right: [
+        '0 -64px',
+        '-32px -64px',
+        '-64px -64px',
+        '-96px -64px',
+      ]
     }
 
     let moveInterval = null;
@@ -128,6 +158,16 @@
     })
 
     function move(direction){
+      if(data.before_direction != direction){
+        data.personImgIndex = 0
+      }else{
+        if(data.personImgIndex === 3){
+          data.personImgIndex = 0
+        }else{
+          data.personImgIndex += 1
+        }
+      }
+      data.before_direction = direction
       switch(direction){
         case 'up':
           y -= speed
@@ -146,7 +186,7 @@
           bg_x -= speed
           break
       }
-      // characterDom.style.transform =`translate(${x}px, ${y}px)`
+      characterDom.style.backgroundPosition = personImgPosition[direction][data.personImgIndex]
       cameraDom.style.backgroundPosition = `${bg_x}px ${bg_y}px`
     }
 
